@@ -23,7 +23,6 @@ P <- house_price*(1 - down_payment)
 monthly_payment <- r/(1 - (1 + r)^(-N))*P
 
 ## RENTING
-year <- 0:N
 yearly_mortgage_payments <- rep(monthly_payment*12, duration_years)
 # The amount for maintenance of the first year grows with inflation
 maintenance_cost <- house_price*maintenance_rate*(1 + inflation_rate)^(1:duration_years)

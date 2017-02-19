@@ -10,6 +10,9 @@ shinyUI(fluidPage(
   titlePanel(h1('Buy vs. Rent - Demystified!', align = 'center')),
   
   fluidRow(
+    column(4, wellPanel(htmlOutput('maximum_rent', align = 'center',
+                                   style = 'color: #2E8B57;'))
+    ),
     column(8,
       fluidRow(
         column(6, 
@@ -66,20 +69,18 @@ shinyUI(fluidPage(
         )
       ),
       fluidRow(
-        column(12,
-               wellPanel(
-                 h4('Property maintenance and insurance'),
-                 textInput('yearly_maintenance_rate', 'Maintenance/Renovation',
-                           value = to_percent(0.01)),
-                 textInput('home_insurannce_rate', 'Home Insurance',
-                           value = to_percent(0.0045))
-               )
-        )
+        column(6,
+          wellPanel(
+            h4('Property maintenance and insurance'),
+            textInput('yearly_maintenance_rate', 'Maintenance/Renovation',
+                      value = to_percent(0.01)),
+            textInput('home_insurannce_rate', 'Home Insurance',
+                      value = to_percent(0.0045))
+          )
+        ),
+        column(6)
       )
-    ),
-    column(4, wellPanel(htmlOutput('maximum_rent', align = 'center',
-                                   style = 'color: #2E8B57;'))
-           )
+    )
   ),
   theme = 'cerulean.css'
   )
