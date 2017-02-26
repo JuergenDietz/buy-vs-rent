@@ -4,6 +4,9 @@
 to_percent <- function(x) paste0(as.character(x*100), '%')
 perc_to_numeric <- function(x) as.numeric(gsub('%', '', x))/100
 
+years_to_int <- function(x) as.numeric(gsub(' years', '', x))
+int_to_years <- function(x) paste0(x, ' years')
+
 get_mortgage_data <- function(rate_yearly, duration_years, principal) {
   # Takes in mortgage parameters and outputs a dataframe with useful 
   # quantities over the whole duration of the mortgage.
@@ -58,7 +61,7 @@ get_tot_balance_buy <- function(mortgage_data, home_price_growth_rate,
 }
 
 
-get_buy_out_running <- function(house_price, duration_years, down_payment,
+get_buy_out_running <- function(house_price, duration_years, down_payment, rate_yearly,
                                  maintenance_rate, inflation_rate, home_insurance_rate) {
   r <- rate_yearly/12
   N <- duration_years*12
@@ -97,7 +100,7 @@ final_rent <- function(rate_yearly, duration_years, house_price, down_payment,
                        inv_rate_yearly, rent_growth_rate, cost_buying,
                        cost_selling, maintenance_rate, home_insurance_rate) {
   buy_out_running <- get_buy_out_running(house_price, duration_years, 
-                                         down_payment, maintenance_rate,
+                                         down_payment, rate_yearly, maintenance_rate,
                                          inflation_rate, home_insurance_rate)
   
   principal <- house_price*(1 - down_payment)
@@ -158,46 +161,48 @@ get_live_in_years_plot <- function(rate_yearly, duration_years, house_price, dow
 
 shinyServer(function(input, output, session) {
   
-  get_params <- function() {
-    return(list(rate_yearly = perc_to_numeric(input$mortgage_rate),
-                duration_years = input$mortgage_duration,
-                house_price = input$house_price,
-                down_payment = perc_to_numeric(input$down_payment),
-                home_price_growth_rate = perc_to_numeric(input$home_price_growth_rate),
-                inflation_rate = perc_to_numeric(input$inflation_rate),
-                live_in_years = input$live_in_time,
-                inv_rate_yearly = perc_to_numeric(input$investment_return_rate),
-                rent_growth_rate = perc_to_numeric(input$rent_growth_rate),
-                cost_buying = perc_to_numeric(input$buying_cost),
-                cost_selling = perc_to_numeric(input$selling_cost),
-                maintenance_rate = perc_to_numeric(input$yearly_maintenance_rate),
-                home_insurance_rate = perc_to_numeric(input$home_insurannce_rate)))
-  }
+  input_vals <- 
+    reactive(list(rate_yearly = perc_to_numeric(input$mortgage_rate),
+              duration_years = input$mortgage_duration,
+              house_price = input$house_price,
+              down_payment = perc_to_numeric(input$down_payment),
+              home_price_growth_rate = perc_to_numeric(input$home_price_growth_rate),
+              inflation_rate = perc_to_numeric(input$inflation_rate),
+              live_in_years = years_to_int(input$live_in_time),
+              inv_rate_yearly = perc_to_numeric(input$investment_return_rate),
+              rent_growth_rate = perc_to_numeric(input$rent_growth_rate),
+              cost_buying = perc_to_numeric(input$buying_cost),
+              cost_selling = perc_to_numeric(input$selling_cost),
+              maintenance_rate = perc_to_numeric(input$yearly_maintenance_rate),
+              home_insurance_rate = perc_to_numeric(input$home_insurannce_rate)))
   
   observeEvent(input$house_price_slider,
                updateNumericInput(session, 'house_price', value = input$house_price_slider)
   )
   
   observeEvent(input$live_in_years_slider,
-               updateNumericInput(session, 'live_in_time', value = input$live_in_years_slider)
+               updateNumericInput(session, 'live_in_time', 
+                                  value = int_to_years(input$live_in_years_slider))
   )
   
-  output$house_price_plot = renderPlot({
-    do.call(get_house_price_plot, get_params())
-    })
-  
-  output$live_in_years_plot = renderPlot({
-    do.call(get_live_in_years_plot, get_params())
-  })
-  
-  output$maximum_rent = renderText(
-    {
-      max_rent <- do.call(final_rent, get_params())
+  final_rent_text <- 
+    eventReactive(list(input$btn, input$trigger), {
+      max_rent <- do.call(final_rent, input_vals())
       
       paste0("<font size = 6>",'If you pay less than ',
              '<br>', '<font size = 10><b>', floor(max_rent), '</b><br>', '<font size = 6>',
              ' in rent it would be better to rent')
-    }
-  )
+      }
+    )
+  
+  output$house_price_plot = renderPlot({
+    do.call(get_house_price_plot, input_vals())
+    })
+  
+  output$live_in_years_plot = renderPlot({
+    do.call(get_live_in_years_plot, input_vals())
+  })
+  
+  output$maximum_rent = renderText(final_rent_text())
   
 })

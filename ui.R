@@ -11,7 +11,13 @@ shinyUI(fluidPage(
   
   fluidRow(
     column(4, wellPanel(htmlOutput('maximum_rent', align = 'center',
-                                   style = 'color: #2E8B57;'))
+                                   style = 'color: #2E8B57;'),
+                        actionButton("btn", "Calculate!", align = 'center')
+                        ),
+           conditionalPanel(
+             condition = 'true == false',
+             textInput('trigger', '', width = 0)
+           )
     ),
     column(8,
       fluidRow(
@@ -20,8 +26,9 @@ shinyUI(fluidPage(
             h4('About the property'),
             strong('House price'),
             numericInput('house_price', label = NULL, value = 250000),
-            numericInput('live_in_time', label = 'How long do you plan to stay?',
-                         value = 9),
+            tagAppendAttributes(
+              textInput('live_in_time', label = 'How long do you plan to stay?',
+                         value = '9 years'), `data-proxy-click` = "btn"),
             bsCollapsePanel('How do these factors affect the result?', 
                             plotOutput('house_price_plot', height = '300px'),
                             sliderInput('house_price_slider', 'House price', 
