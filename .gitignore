@@ -1,2 +1,10 @@
+
+## R
 .Rhistory
 dynamics-correct.R
+
+## LaTeX
+*.synctex.gz
+*.aux
+*.log
+*.lb

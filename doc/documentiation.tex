@@ -1,0 +1,90 @@
+\documentclass{article}
+
+\usepackage{amsmath}
+\usepackage[left = 2.5cm, right = 2.5cm, top = 1.5cm, bottom = 1.5cm]{geometry}
+
+\begin{document}
+\vspace*{0.5cm}
+{\centering \LARGE Documentation for Buy Vs. Rent Calculator \par}
+\vspace{0.8cm}
+
+
+\section{Mortgage Calculations}
+Notation:
+\begin{itemize}
+	\item \emph{Monthly} interest rate: $r$
+	\item Mortgage principal: $P$
+	\item Mortgage duration in \emph{months}: $N$
+\end{itemize}
+
+Assuming this is a fixed interest mortgage, the constant monthly payment to be made is
+\begin{equation}
+	\label{monthly_payment}
+	c = \frac{r}{1 - \left(1 + r\right)^{-N}}P
+\end{equation}
+
+After $k$ months with outstanding principal $P_k$ the monthly payment can be decomposed into
+an interest part and a payment towards the principal for the next month:
+\begin{itemize}
+	\item Interest: $r P_k$
+	\item Payment towards principal: $c - r P_k$
+\end{itemize}
+In particular, after month $k + 1$ the remaining principal is $P_k - (c -r P_k) = (1 + r)P_k - c$.
+Summing up these monthly contributions towards the principal $P$ we get that the remaining principal that still has to be paid off is:
+\begin{align}
+	\label{rem_prin}
+	P_k &= (1 + r)^k P - \left(1 + (1 + r) + (1 + r)^2 + \dots + (1 + r)^{k-1}\right)c \\
+		&= \frac{1 - (1 + r)^{k - N}}{1 - (1 + r)^{-N}}P.
+\end{align}
+And the interest to be paid in month $k$ is then:
+\begin{equation}
+	r P_{k - 1} = r \frac{1 - (1 + r)^{k - N}}{1 - (1 + r)^{-N}}P.
+\end{equation}
+
+
+\section{Rent vs. Buy Scenario}
+In each scenario the total financial position after a given number of years is
+$balance_{rent}$ and $balance_{buy}$ and for small values of monthly rent we would get
+\begin{equation}
+	balance_{rent} < balance_{buy},
+\end{equation}
+i.e. renting would be financially better. For increasing rent the renting sceanrio will get more costly and we are interested in the maximum rent before buying becomes better:
+\begin{equation}
+	balance_{rent}(rent_{max}) = balance_{buy}.
+\end{equation}
+
+\subsection{Renting}
+To calculate the function $balance_rent$ we start with one-off costs associated with buying a home that represent available money when renting:
+\begin{equation}
+	\label{initial_bal_rent}
+	balance_{rent, 0} = HousePrice*(DownPayment + CostSelling),
+\end{equation}
+where $DownPayment$ and $CostSelling$ are percentages of the house price. This is capital that is available from year $0$ in the rent scenario. To get the available capital in the next year we use the recursion:
+\begin{multline}
+	balance_{rent, n+1} = balance_{rent, n}(1 + InvRate) + BuyOutRunning_n \\
+	- 12*rent*(1 + RentGrowth)^n.
+\end{multline}
+Each year the existing balance is assumed to grow with the constant investment rate $InvRate$. Running costs that are due in the buying scenario, $BuyOutRunning_n$, can be saved in the rental scenario. Finally, outgoing money in the rental scenario each year is the monthly rent which is assumed to grow at a yearly rate of $RentGrowth$.
+
+We can use this formula to calculate the total balance when renting for each year once we determine the running costs in the buy scenario. For year $n$ these are:
+\begin{multline}
+	BuyRunningOut_n = 12c + HousePrice*(r_{main} + r_{ins})*(1 + i)^{n-1}.
+\end{multline}
+Here, $c$ is the monthly mortgage payment from \eqref{monthly_payment} and we assume that maintenance and insuarance are required at a rate of $r_{main}$ and $r_{ins}$, rspectively. The latter grow with an inflation rate $i$.
+
+\subsection{Buying}
+In the buy scenario the initally available money \eqref{initial_bal_rent} is spent in the process of buying and is thus no longer available. If the property is then sold after $n$ years the balance is:
+\begin{multline}
+	balance_{buy, n} = HousePrice*(1+HomePriceGrowthRate)^n \\
+	*(1-CostSelling) - P_n,
+\end{multline}
+where we assume a growth rate of property value of $HomePriceGrowthRate$, take into account the cost of selling as a percentage, $CostSelling$, and $P_n$ is the remaining principal \eqref{rem_prin} that still has to be paid off.
+
+\section{Overall assumptions}
+The above modelling assumes:
+\begin{enumerate}
+	\item Any additional savings that remain from any income are treated equally for buying and renting.
+\end{enumerate}
+
+
+\end{document}
