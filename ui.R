@@ -9,7 +9,8 @@ perc_to_numeric <- function(x)
   as.numeric(gsub('%', '', x)) / 100
 
 shinyUI(fluidPage(titlePanel(
-  h1('Buy vs. Rent - Demystified!', align = 'center')
+  h1('Buy vs. Rent - Demystified!', align = 'center'),
+  tags$head(tags$title("Buy vs. Rent - Demystified"))
 ),
   
   fluidRow(
@@ -28,7 +29,7 @@ shinyUI(fluidPage(titlePanel(
           wellPanel(
             h4('About the property'),
             strong('House price'),
-            numericInput('house_price', label = NULL, value = 250000),
+            numericInput('house_price', label = NULL, value = 250000, step = 1000),
             tagAppendAttributes(
               textInput('live_in_time', label = 'How long do you plan to stay?',
                 value = '9 years'),
@@ -84,9 +85,11 @@ shinyUI(fluidPage(titlePanel(
           textInput(
             'home_price_growth_rate',
             'What is the expected
-            home price growth rate?',
+            home price growth rate? For the UK, 
+            get last year\'s estimate by entering a postcode.',
             value = to_percent(0.03)
           ),
+          textOutput('home_price_growth_from_postcode'),
           textInput(
             'rent_growth_rate',
             'What is the rent growth rate?',

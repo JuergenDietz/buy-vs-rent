@@ -1,3 +1,5 @@
+## Shiny
+rsconnect
 
 ## R
 .Rhistory
@@ -8,3 +10,6 @@ dynamics-correct.R
 *.aux
 *.log
 *.lb
+
+## individual files
+zoopla-api-key.txt

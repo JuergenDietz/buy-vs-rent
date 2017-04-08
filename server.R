@@ -1,4 +1,8 @@
 
+library(httr)
+
+api_key <- readLines('zoopla-api-key.txt')
+
 # Many inputs are strings with percentages for readability.
 # These two functions allow to easily go to and fro between numbers and percentages (strings).
 to_percent <- function(x) paste0(as.character(x*100), '%')
@@ -148,6 +152,42 @@ get_live_in_years_plot <- function(p) {
           ylim = c(0, max(rents)*1.2))
 }
 
+get_zed_index <- function(zoopla_content) {
+  zvals <- data.frame(months_ago = 0, zed_value = as.numeric(zoopla_content$zed_index))
+  zvals <- rbind(zvals, data.frame(months_ago = -3, 
+    zed_value = as.numeric(zoopla_content$zed_index_3month)))
+  zvals <- rbind(zvals, data.frame(months_ago = -6, 
+    zed_value = as.numeric(zoopla_content$zed_index_6month)))
+  for (i in 1:5) {
+    col_name <- paste0('zed_index_', i, 'year')
+    zvals <- rbind(zvals, data.frame(months_ago = -i*12,
+      zed_value = as.numeric(zoopla_content[[col_name]])))
+  }
+  return(zvals)
+}
+
+get_hp_growth_rate <- function(hp_input) {
+  # A postcode is here identified by having at least three letters and
+  # two numbers
+  hp_input <- gsub(pattern = '\\s', replacement = '', tolower(hp_input))
+  n_letters <- sum(sapply(strsplit(hp_input, ''), FUN = function(l) l %in% letters))
+  n_digits <- sum(sapply(strsplit(hp_input, ''), FUN = function(l) l %in% 0:9))
+  if (n_letters > 2 & n_digits > 1) {
+    # get estimate from Zoopla
+    zoopla_out <- GET(url = paste0('http://api.zoopla.co.uk/api/v1/zed_index.js?',
+      'postcode=', hp_input, '&output_type=outcode&api_key=', api_key))
+    zoopla_cont <- content(zoopla_out, as = 'parsed')
+    zvals <- get_zed_index(zoopla_cont)
+    # Only use the data for the last year to estimate the growth rate
+    # to focus on short term buyers for now
+    lm_zval <- lm(zed_value ~ months_ago, data = zvals[1:4, ])
+    growth_rate <- lm_zval$coefficients[2]/zvals$zed_value[4]
+    return(growth_rate)
+  } else {
+    return(perc_to_numeric(hp_input))
+  }
+}
+
 shinyServer(function(input, output, session) {
   
   input_vals <- 
@@ -155,7 +195,7 @@ shinyServer(function(input, output, session) {
               duration_years = years_to_int(input$mortgage_duration),
               house_price = input$house_price,
               down_payment = perc_to_numeric(input$down_payment),
-              home_price_growth_rate = perc_to_numeric(input$home_price_growth_rate),
+              home_price_growth_rate = get_hp_growth_rate(input$home_price_growth_rate),
               inflation_rate = perc_to_numeric(input$inflation_rate),
               live_in_years = years_to_int(input$live_in_time),
               inv_rate_yearly = perc_to_numeric(input$investment_return_rate),
@@ -186,6 +226,13 @@ shinyServer(function(input, output, session) {
       }
     )
   
+  current_home_price_growth_text <- 
+    eventReactive(list(input$btn, input$trigger), {
+      paste('Growth rate used in calculation:',
+        to_percent(round(input_vals()$home_price_growth_rate, 4)))
+    }
+    )
+  
   output$house_price_plot = renderPlot({
     get_house_price_plot(input_vals())
     })
@@ -195,5 +242,7 @@ shinyServer(function(input, output, session) {
   })
   
   output$maximum_rent = renderText(final_rent_text())
+  
+  output$home_price_growth_from_postcode <- renderText(current_home_price_growth_text())
   
 })
