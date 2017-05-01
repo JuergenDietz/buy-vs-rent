@@ -152,6 +152,142 @@ get_live_in_years_plot <- function(p) {
           ylim = c(0, max(rents)*1.2))
 }
 
+get_mortgage_rate_plot <- function(p) {
+  # Plots the change in maximum rent for mortgage rates around the current mortgage rate
+  
+  mortgage_rates_vec <- seq(from = max(p$rate_yearly - 0.01, 0.01),
+    to = min(p$rate_yearly + 0.01, 0.1), by = 0.0025)
+  
+  rents <- sapply(mortgage_rates_vec, FUN = function(mrate) {
+    p_mod <- p
+    p_mod$rate_yearly <- mrate
+    final_rent(p_mod)
+  })
+  
+  barplot(rents, names.arg = mortgage_rates_vec*100,
+    border = NA, col = 'skyblue3', space = 0.3, xlab = 'Mortgage Rate (%)', ylab = 'Rent', 
+    ylim = c(0, max(rents)*1.2))
+}
+
+get_mortgage_duration_plot <- function(p) {
+  # Plots the change in maximum rent for mortgage rates around the current mortgage rate
+  
+  mortgage_durations_vec <- seq(from = max(p$duration_years - 5, 5),
+    to = min(p$duration_years + 5, 40), by = 1)
+  
+  rents <- sapply(mortgage_durations_vec, FUN = function(mduration) {
+    p_mod <- p
+    p_mod$duration_years <- mduration
+    final_rent(p_mod)
+  })
+
+  barplot(rents, names.arg = mortgage_durations_vec,
+    border = NA, col = 'skyblue3', space = 0.3, xlab = 'Mortgage Duration (Years)', ylab = 'Rent', 
+    ylim = c(0, max(rents)*1.2))
+}
+
+get_down_payment_plot <- function(p) {
+  # Plots the change in maximum rent for mortgage rates around the current mortgage rate
+  
+  down_payments_vec <- seq(from = max(p$down_payment - 0.05, 0.05),
+    to = min(p$down_payment + 0.05, 1), by = 0.01)
+  
+  rents <- sapply(down_payments_vec, FUN = function(dp) {
+    p_mod <- p
+    p_mod$down_payment <- dp
+    final_rent(p_mod)
+  })
+
+  barplot(rents, names.arg = down_payments_vec*100,
+    border = NA, col = 'skyblue3', space = 0.3, xlab = 'Down Payment (%)', ylab = 'Rent', 
+    ylim = c(0, max(rents)*1.2))
+}
+
+get_investment_return_plot <- function(p) {
+  # Plots the change in maximum rent for mortgage rates around the current mortgage rate
+  
+  investment_returns_vec <- seq(from = max(p$inv_rate_yearly - 0.04, 0),
+    to = min(p$inv_rate_yearly + 0.04, 0.3), by = 0.01)
+  
+  rents <- sapply(investment_returns_vec, FUN = function(ir) {
+    p_mod <- p
+    p_mod$down_payment <- ir
+    final_rent(p_mod)
+  })
+
+  barplot(rents, names.arg = investment_returns_vec*100,
+    border = NA, col = 'skyblue3', space = 0.3, xlab = 'Investment Return (%)', ylab = 'Rent', 
+    ylim = c(0, max(rents)*1.2))
+}
+
+get_house_price_growth_plot <- function(p) {
+  # Plots the change in maximum rent for mortgage rates around the current mortgage rate
+  
+  house_price_growths_vec <- seq(from = max(p$home_price_growth_rate - 0.04, -0.05),
+    to = min(p$home_price_growth_rate + 0.04, 0.2), by = 0.01)
+  
+  rents <- sapply(house_price_growths_vec, FUN = function(hpgr) {
+    p_mod <- p
+    p_mod$home_price_growth_rate <- hpgr
+    final_rent(p_mod)
+  })
+  
+  barplot(rents, names.arg = round(house_price_growths_vec*100, 1),
+    border = NA, col = 'skyblue3', space = 0.3, xlab = 'House Price Growth Rate (%)', ylab = 'Rent', 
+    ylim = c(0, max(rents)*1.2))
+}
+
+get_rent_growth_plot <- function(p) {
+  # Plots the change in maximum rent for mortgage rates around the current mortgage rate
+  
+  rent_growths_vec <- seq(from = max(p$rent_growth_rate - 0.02, -0.02),
+    to = min(p$rent_growth_rate + 0.02, 0.1), by = 0.005)
+  
+  rents <- sapply(rent_growths_vec, FUN = function(rgr) {
+    p_mod <- p
+    p_mod$rent_growth_rate <- rgr
+    final_rent(p_mod)
+  })
+  
+  barplot(rents, names.arg = round(rent_growths_vec*100, 1),
+    border = NA, col = 'skyblue3', space = 0.3, xlab = 'Rent Growth Rate (%)', ylab = 'Rent', 
+    ylim = c(0, max(rents)*1.2))
+}
+
+get_maintenance_plot <- function(p) {
+  # Plots the change in maximum rent for mortgage rates around the current mortgage rate
+  
+  maintenance_rates_vec <- seq(from = max(p$maintenance_rate - 0.01, 0),
+    to = min(p$maintenance_rate + 0.01, 0.08), by = 0.005)
+  
+  rents <- sapply(maintenance_rates_vec, FUN = function(mr) {
+    p_mod <- p
+    p_mod$maintenance_rate <- mr
+    final_rent(p_mod)
+  })
+  
+  barplot(rents, names.arg = round(maintenance_rates_vec*100, 1),
+    border = NA, col = 'skyblue3', space = 0.3, xlab = 'Maintenance Rate (%)', ylab = 'Rent', 
+    ylim = c(0, max(rents)*1.2))
+}
+
+get_home_insurance_plot <- function(p) {
+  # Plots the change in maximum rent for mortgage rates around the current mortgage rate
+  
+  home_insurance_rates_vec <- seq(from = max(p$home_insurance_rate - 0.005, 0),
+    to = min(p$home_insurance_rate + 0.005, 0.02), by = 0.001)
+  
+  rents <- sapply(home_insurance_rates_vec, FUN = function(hir) {
+    p_mod <- p
+    p_mod$home_insurance_rate <- hir
+    final_rent(p_mod)
+  })
+  
+  barplot(rents, names.arg = round(home_insurance_rates_vec*100, 2),
+    border = NA, col = 'skyblue3', space = 0.3, xlab = 'Home Insurance Rate (%)', ylab = 'Rent', 
+    ylim = c(0, max(rents)*1.2))
+}
+
 get_zed_index <- function(zoopla_content) {
   zvals <- data.frame(months_ago = 0, zed_value = as.numeric(zoopla_content$zed_index))
   zvals <- rbind(zvals, data.frame(months_ago = -3, 
@@ -182,7 +318,7 @@ get_hp_growth_rate <- function(hp_input) {
     # to focus on short term buyers for now
     lm_zval <- lm(zed_value ~ months_ago, data = zvals[1:4, ])
     growth_rate <- lm_zval$coefficients[2]/zvals$zed_value[4]
-    return(growth_rate)
+    return(as.numeric(growth_rate))
   } else {
     return(perc_to_numeric(hp_input))
   }
@@ -203,35 +339,56 @@ shinyServer(function(input, output, session) {
               cost_buying = perc_to_numeric(input$buying_cost),
               cost_selling = perc_to_numeric(input$selling_cost),
               maintenance_rate = perc_to_numeric(input$yearly_maintenance_rate),
-              home_insurance_rate = perc_to_numeric(input$home_insurannce_rate)))
+              home_insurance_rate = perc_to_numeric(input$home_insurance_rate)))
   
   observeEvent(input$house_price_slider,
                updateNumericInput(session, 'house_price', value = input$house_price_slider)
   )
-  
+
   observeEvent(input$live_in_years_slider,
-               updateNumericInput(session, 'live_in_time', 
+               updateNumericInput(session, 'live_in_time',
                                   value = int_to_years(input$live_in_years_slider))
   )
+
+  observeEvent(input$mortgage_rate_slider,
+    updateNumericInput(session, 'mortgage_rate',
+      value = to_percent(input$mortgage_rate_slider/100))
+  )
+
+  observeEvent(input$mortgage_duration_slider,
+    updateNumericInput(session, 'mortgage_duration',
+      value = int_to_years(input$mortgage_duration_slider))
+  )
+
+  observeEvent(input$down_payment_slider,
+    updateNumericInput(session, 'down_payment',
+      value = to_percent(input$down_payment_slider/100))
+  )
+
+  observeEvent(input$investment_return_slider,
+    updateNumericInput(session, 'investment_return_rate',
+      value = to_percent(input$investment_return_slider/100))
+  )
+
+  observeEvent(input$house_price_growth_slider,
+    updateNumericInput(session, 'home_price_growth_rate',
+      value = to_percent(input$house_price_growth_slider/100))
+  )
+
+  observeEvent(input$rent_growth_slider,
+    updateNumericInput(session, 'rent_growth_rate',
+      value = to_percent(input$rent_growth_slider/100))
+  )
   
+  observeEvent(input$maintenance_slider,
+    updateNumericInput(session, 'yearly_maintenance_rate',
+      value = to_percent(input$maintenance_slider/100))
+  )
   
-  final_rent_text <- 
-    
-    eventReactive(list(input$btn, input$trigger), {
-      max_rent <- final_rent(input_vals())
-      
-      paste0("<font size = 6>",'If you pay less than ',
-             '<br>', '<font size = 10><b>', floor(max_rent), '</b><br>', '<font size = 6>',
-             ' in rent it would be better to rent')
-      }
-    )
-  
-  current_home_price_growth_text <- 
-    eventReactive(list(input$btn, input$trigger), {
-      paste('Growth rate used in calculation:',
-        to_percent(round(input_vals()$home_price_growth_rate, 4)))
-    }
-    )
+  observeEvent(input$home_insurance_slider,
+    updateNumericInput(session, 'home_insurance_rate',
+      value = to_percent(input$home_insurance_slider/100))
+  )
   
   output$house_price_plot = renderPlot({
     get_house_price_plot(input_vals())
@@ -241,8 +398,71 @@ shinyServer(function(input, output, session) {
     get_live_in_years_plot(input_vals())
   })
   
-  output$maximum_rent = renderText(final_rent_text())
+  output$mortgage_rate_plot = renderPlot({
+    get_mortgage_rate_plot(input_vals())
+  })
+  
+  output$mortgage_duration_plot = renderPlot({
+    get_mortgage_duration_plot(input_vals())
+  })
+  
+  output$down_payment_plot = renderPlot({
+    get_down_payment_plot(input_vals())
+  })
+  
+  output$investment_return_plot = renderPlot({
+    get_investment_return_plot(input_vals())
+  })
+  
+  output$house_price_growth_plot = renderPlot({
+    get_house_price_growth_plot(input_vals())
+  })
+  
+  output$rent_growth_plot = renderPlot({
+    get_rent_growth_plot(input_vals())
+  })
+  
+  output$maintenance_plot = renderPlot({
+    get_maintenance_plot(input_vals())
+  })
+  
+  output$home_insurance_plot = renderPlot({
+    get_home_insurance_plot(input_vals())
+  })
+  
+  final_rent_text <- 
+    
+    eventReactive(list(input$btn, input$trigger), {
+      max_rent <- final_rent(input_vals())
+      
+      updateSliderInput(session, 'house_price_slider', value = input$house_price)
+      updateSliderInput(session, 'live_in_years_slider',
+        value = years_to_int(input$live_in_time))
+      updateSliderInput(session, 'mortgage_rate_slider', 
+        value = perc_to_numeric(input$mortgage_rate)*100)
+      updateSliderInput(session, 'house_price_growth_slider',
+        value = round(get_hp_growth_rate(input$home_price_growth_rate)*100, 2))
+      updateSliderInput(session, 'maintenance_slider',
+        value = perc_to_numeric(input$yearly_maintenance_rate)*100)
+      updateSliderInput(session, 'home_insurance_slider', 
+        value = perc_to_numeric(input$home_insurance_rate)*100)
+      updateSliderInput(session, 'rent_growth_slider', 
+        value = perc_to_numeric(input$rent_growth_rate)*100)
+      updateSliderInput(session, 'investment_return_slider', 
+        value = perc_to_numeric(input$investment_return_rate)*100)
+      updateSliderInput(session, 'mortgage_duration_slider', 
+        value = years_to_int(input$mortgage_duration))
+      updateSliderInput(session, 'down_payment_slider', 
+        value = perc_to_numeric(input$down_payment)*100)
+      
+      paste0("<font size = 6>",'If you pay less than ',
+        '<br>', '<font size = 10><b>', floor(max_rent), '</b><br>', '<font size = 6>',
+        ' in rent it would be better to rent')
+    }
+    )
   
   output$home_price_growth_from_postcode <- renderText(current_home_price_growth_text())
+  
+  output$maximum_rent = renderText(final_rent_text())
   
 })
