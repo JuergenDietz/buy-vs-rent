@@ -65,7 +65,8 @@ shinyUI(fluidPage(
                 'home_price_growth_rate',
                 'What is the expected
                 home price growth rate? For the UK, 
-                get last year\'s estimate by entering a postcode.',
+                get last year\'s estimate by entering a postcode
+                (powered by Zoopla).',
                 value = to_percent(0.03)
               ),
               textInput(
